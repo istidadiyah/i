@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi Isti'dadiyah</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Bootstrap Select CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.min.css">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="../styles/header.css">
+
+    <!-- Default Theme CSS -->
+    <link id="themeStylesheet" rel="stylesheet" href="styles/tema/light.css">
+    
+</head>
+<body>
+    <div class="svg-container">
+        <!-- I crated SVG with: https://codepen.io/anthonydugois/pen/mewdyZ -->
+        <svg viewbox="0 0 800 400" class="svg">
+            <path id="curve" fill="#50c6d8" d="M 800 300 Q 400 350 0 300 L 0 0 L 800 0 L 800 300 Z">
+          </path>
+        </svg>
+      </div>
+    
+      <header>
+        <h1>Absensi Isti'dadiyah</h1>
+        <div class="sub-title" id="tanggalInfo">
+            Tanggal: 1 Muharram (Malam) - Tahun Pelajaran 1445-1446
+        </div>
+      </header>
+
+
+
+    <!-- Tampilan antrian di pojok kanan atas -->
+    <div id="antrianCounter" style="display: none;">
+        0
+    </div>
+    
+     <!-- Loading Spinner -->
+     <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner-inner">
+            <img src="../logo.png" alt="Logo" class="logo">
+        </div>
+    </div>
+    
+    <div class="container mt-4">
+        <!-- Card untuk form -->
+        <!-- Filter Form -->
+        <div id="formfilter" class="card shadow-sm p-4 form-filter">
+            <div class="col-12">
+                <label for="filterGuru">Guru:</label>
+                <select id="filterGuru" class="form-control">
+                    <option value="">Pilih Guru</option>
+                    <option value="Fahril Umam">Fahril Umam</option>
+                    <option value="Muhammad Danial">Muhammad Danial</option>
+                    <option value="Taufiqurrahman S">Taufiqurrahman S</option>
+                    <option value="M. Affan">M. Affan</option>
+                    <option value="Miftahul Anam">Miftahul Anam</option>
+                    <option value="M. Fikrin Ni'am">M. Fikrin Ni'am</option>
+                    <option value="M. Sofyan">M. Sofyan</option>
+                    <option value="Mufti Ali">Mufti Ali</option>
+                </select>
+            </div>
+
+            <div class="card-body">
+                <!-- Filter Tanggal & Bulan -->
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="filterTanggalBulan">Tanggal & Bulan Hijriyah:</label>
+                    </div>
+                
+                    <!-- Flex container untuk Tanggal dan Bulan -->
+                    <div class="col-md-12 d-flex">
+                        <!-- Tanggal (Sejajar dengan Bulan) -->
+                        <div class="flex-fill">
+                            <select id="filterTanggal" class="form-control select-tanggal">
+                                <script>
+                                    for (let i = 1; i <= 31; i++) {
+                                        document.write('<option value="' + i + '">' + (i < 10 ? '0' + i : i) + '</option>');
+                                    }
+                                </script>
+                            </select>
+                        </div>
+                
+                        <!-- Bulan (Sejajar dengan Tanggal) -->
+                        <div class="flex-fill">
+                            <select id="filterBulan" class="form-control select-bulan">
+                                <option value="01">Muharram</option>
+                                <option value="02">Shafar</option>
+                                <option value="03">Rabi'ul Awwal</option>
+                                <option value="04">Rabi'ul Akhir</option>
+                                <option value="05">Jumadil Awwal</option>
+                                <option value="06">Jumadil Akhir</option>
+                                <option value="07">Rajab</option>
+                                <option value="08">Sya'ban</option>
+                                <option value="09">Ramadhan</option>
+                                <option value="10">Syawal</option>
+                                <option value="11">Dzulqa'dah</option>
+                                <option value="12">Dzulhijjah</option>
+                            </select>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <div class="flex-fill">
+                    <select id="filterJam" class="form-control select-bulan">
+                        <option value="M">Malam</option>
+                        <option value="1">Jam ke 1</option>
+                        <option value="2">Jam ke 2</option>
+                    </select>
+                </div>
+
+                <br>
+
+                <!-- Filter Kelas -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="filterKelas">Kelas:</label>
+                        <select id="filterKelas" class="form-control">
+                            <option value="">Pilih Kelas</option>
+                            <!-- Kelas options will be dynamically filled here -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Button to Toggle Form -->
+        <button id="toggleFormButton" class="btn btn-primary rounded-circle toggle-button">
+            <div class="spinner-inner">
+                <img src="../logo.png" alt="Logo" class="logo">
+            </div>
+            <i class="fas fa-filter"></i>
+        </button>
+
+    
+        <!-- Data Table -->
+        <div class="card shadow-sm mt-4">
+            <div class="card-body">
+                <table id="dataTable" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Kelas</th>
+                            <th>Absensi</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    
+        <!-- Dynamic Table (hidden initially) -->
+        <div class="card shadow-sm mt-4" style="display: none;" id="dynamicTableCard">
+            <div class="card-body">
+                <table id="dynamicTable" class="table table-striped table-bordered">
+                    <thead id="dynamicHeader"></thead>
+                    <tbody id="dynamicBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>copyright Isti'dadiyah</p>
+        <small>🕷 Team IT <a href="http://armantaherian.com">Isti'dadiyah</a>.</small>
+    </footer>
+
+
+    <!-- Bootstrap Select JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="../scripts/cache.js"></script>
+    <script src="../scripts/header.js"></script> 
+    <script src="../scripts/online.js"></script>
+    <script src="../scripts/select.js"></script>
+    <script src="../scripts/setting.js"></script>
+    <script src="../scripts/tabel.js"></script>
+
+    <script>
+        $(document).ready(function(){
+            fetchDataFromAppScript();
+        });
+    </script>
+    
+
+</body>
+</html>

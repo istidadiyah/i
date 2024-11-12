@@ -1,0 +1,236 @@
+/* Styling for the queue counter */
+#antrianCounter {
+    position: fixed;
+    top: 15px; /* Adjusted to place the counter below the header */
+    right: 10px;
+    padding: 5px 8px; /* Adjusted padding to fit the smaller circle */
+    background-color: #004702dc;
+    color: rgb(255, 255, 255);
+    font-size: 12px; /* Smaller font size */
+    border-radius: 50%; /* Make the element circular */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    z-index: 9999; /* Ensure it's in front of all elements */
+    display: flex;
+    justify-content: center; /* Horizontally center text */
+    align-items: center; /* Vertically center text */
+    width: 30px;  /* Smaller circle width */
+    height: 30px; /* Smaller circle height */
+    text-align: center; /* Ensure the text is centered */
+}
+
+/* Animations for the queue counter */
+.queue-anim {
+    animation: bounce 0.5s ease-out;
+}
+
+/* Keyframes for bounce animation */
+@keyframes bounce {
+    0% {
+        transform: scale(1); /* Initial size */
+    }
+    50% {
+        transform: scale(1.3); /* Slightly larger scale */
+    }
+    100% {
+        transform: scale(1); /* Back to original size */
+    }
+}
+
+/* Ensure the counter animates when it changes */
+#antrianCounter.queue-anim {
+    animation: bounce 0.5s ease-out;
+}
+
+
+
+
+
+
+/* Flexbox untuk memastikan Tanggal dan Bulan tetap sejajar */
+.d-flex {
+    display: flex;
+    gap: 10px; /* Jarak antara Tanggal dan Bulan */
+    justify-content: space-between;
+}
+
+/* Mengatur lebar select tanggal agar cukup untuk 2 digit */
+.select-tanggal {
+    width: 70px; /* Menyesuaikan lebar untuk 2 digit */
+    min-width: 70px; /* Tidak boleh lebih kecil dari 70px */
+}
+
+/* Mengatur lebar select bulan agar mengikuti sisa ruang */
+.select-bulan {
+    flex-grow: 1; /* Agar lebar bulan mengisi sisa ruang */
+    min-width: 150px; /* Agar select bulan tidak terlalu kecil */
+}
+
+/* Responsif: Mengatur agar flex tetap horizontal */
+@media (max-width: 576px) {
+    .d-flex {
+        flex-wrap: nowrap; /* Tidak membungkus ke baris baru */
+        overflow: hidden; /* Jika lebar terlalu kecil, elemen tidak akan turun ke bawah */
+    }
+
+    .select-tanggal,
+    .select-bulan {
+        width: 100%; /* Lebar penuh di perangkat kecil */
+        min-width: 0; /* Menghindari elemen terlalu besar di layar kecil */
+    }
+}
+
+
+
+
+#formfilter {
+    max-width: 330px;
+}
+
+#filterKelas {
+    min-width: 100%;
+}
+
+
+/* CSS for the floating button */
+.toggle-button {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);   
+}
+
+
+.toggle-button i {
+    font-size: 24px;
+    color: white;
+}
+
+
+/* CSS for the form filter */
+.form-filter {
+    position: fixed;
+    left: 50%;
+    transform: translate(-50%, 100%) scale(0); /* Start off-screen vertically with scale 0 */
+    opacity: 0;
+    transition: transform 0.5s ease, opacity 0.5s ease, box-shadow 0.3s ease;
+    z-index: 9999;
+    width: 90%;
+    max-width: 500px;
+
+    /* Modern background with gradient */
+    background: linear-gradient(145deg, rgba(0, 150, 7, 0.8), rgba(0, 0, 0, 0.7));
+    border-radius: 15px; /* Rounded corners */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    padding: 20px; /* Padding inside the form */
+    color: #fff; /* Text color */
+    backdrop-filter: blur(5px); /* Optional: Apply a blur effect to background */
+
+    cursor: grab; /* Mengubah kursor menjadi tangan untuk menunjukkan elemen bisa dipindah */
+    touch-action: none; /* Disable the default touch actions (e.g., scroll) when interacting with the element */
+}
+
+.form-filter:active {
+    cursor: grabbing; /* Mengubah kursor menjadi "grabbing" saat form sedang diseret */
+}
+
+/* Form visible state */
+.form-filter.show {
+    transform: translate(-50%, -20%) scale(1); /* Move slightly below center of the screen with full scale */
+    opacity: 1;
+}
+
+
+
+/* Additional Styling for Form Inputs */
+.form-filter select,
+.form-filter input {
+    background: rgba(255, 255, 255, 0.2); /* Slight transparent white background for inputs */
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    width: 100%;
+    margin: 5px 0;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.form-filter select:focus,
+.form-filter input:focus {
+    background-color: rgba(255, 255, 255, 0.3); /* Focus effect */
+    transform: scale(1.05); /* Slight scaling effect on focus */
+}
+
+
+
+
+
+
+
+
+
+
+
+.loading-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 255, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.spinner-inner {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-spinner::before {
+    content: '';
+    position: absolute;
+    width: 80px;  /* Ukuran ini harus lebih besar dari logo untuk terlihat mengelilinginya */
+    height: 80px; /* Ukuran ini harus lebih besar dari logo untuk terlihat mengelilinginya */
+    border: 5px solid #4CAF50;
+    border-top: 5px solid transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.logo {
+    position: relative;
+    width: 60px; /* Ukuran logo */
+    height: 60px; /* Ukuran logo */
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+
+.absensi-button {
+    border-radius: 50%;
+    padding: 2px 2px;
+    margin: 0 1px;
+    font-size: 14px;
+}
+
+.absensi-button.H { background-color: gray; color: white; }
+.absensi-button.A { background-color: gray; color: white; }
+.absensi-button.S { background-color: gray; color: white; }
+.absensi-button.I { background-color: gray; color: white; }
+.active.H { background-color: green; }
+.active.A { background-color: red; }
+.active.S { background-color: blue; }
+.active.I { background-color: orange; }
