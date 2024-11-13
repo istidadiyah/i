@@ -7,12 +7,12 @@ function fetchDataFromAppScript() {
         .then(data => {
             console.log("Data diterima:", data);  // Menambahkan log untuk melihat data
 
-            if (data && data.sheet1Data && data.sheet2Data) {
+            if (data && data.Santri && data.Absensi) {
                 // Memanggil fungsi untuk menampilkan data di tabel pertama (static)
-                insertDataToTable(data.sheet1Data);
+                insertDataToTable(data.Santri);
                 
                 // Memanggil fungsi untuk menampilkan data di tabel kedua (dynamic)
-                insertDataToDynamicTable(data.sheet2Data);
+                insertDataToDynamicTable(data.Absensi);
 
                 var loadingSpinner = document.getElementById("loadingSpinner");
                 loadingSpinner.style.display = "none";
