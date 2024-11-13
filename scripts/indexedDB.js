@@ -1,3 +1,49 @@
+//------------------------- Cek Data Santri ---------------------------
+// Fungsi untuk memeriksa apakah object store ada di IndexedDB dan menangani versi database secara otomatis
+function cekObjectStore(namaObjectStore) {
+    // Membuka IndexedDB dengan versi yang lebih tinggi dari yang ada
+    const request = indexedDB.open('Istidadiyah'); // Tanpa menentukan versi, akan membuka versi yang ada
+
+    request.onsuccess = function(event) {
+        const db = event.target.result;
+        const currentVersion = db.version;  // Mendapatkan versi saat ini dari database
+
+        console.log(`Versi database saat ini: ${currentVersion}`);
+
+        // Mengecek apakah object store dengan nama yang diberikan ada
+        if (db.objectStoreNames.contains(namaObjectStore)) {
+            console.log(`Object store "${namaObjectStore}" ditemukan.`);
+            // Lakukan aksi lain jika object store ada (misalnya, mengambil data)
+        } else {
+            console.log(`Object store "${namaObjectStore}" tidak ditemukan. Memperbarui...`);
+            // Jika object store tidak ada, panggil PerbaruiSantri untuk memperbarui data
+            PerbaruiSantri();
+        }
+    };
+
+    request.onerror = function(event) {
+        console.error("Gagal membuka IndexedDB:", event.target.error);
+    };
+
+    // Event untuk menangani upgrade database (jika versi tidak sesuai atau object store belum ada)
+    request.onupgradeneeded = function(event) {
+        const db = event.target.result;
+        const currentVersion = event.target.result.version;  // Mendapatkan versi saat ini yang digunakan
+
+        console.log(`Upgrade database ke versi ${currentVersion}...`);
+
+        // Menambahkan atau memperbarui object store jika diperlukan
+        if (!db.objectStoreNames.contains(namaObjectStore)) {
+            console.log(`Object store "${namaObjectStore}" tidak ditemukan. Membuat object store baru.`);
+            db.createObjectStore(namaObjectStore, { keyPath: 'id' }); // Gantilah keyPath jika diperlukan
+        }
+    };
+}
+
+
+
+
+
 function PerbaruiObjectStore(sheetName, data) {
     // Membuka database IndexedDB "Istidadiyah"
     let request = indexedDB.open("Istidadiyah");

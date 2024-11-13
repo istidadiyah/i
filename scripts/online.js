@@ -6,6 +6,15 @@ function PerbaruiSantri() {
     // Menggunakan URL API dengan action DataSantri
     const url = `${BASE_API_URL}?action=DataSantri`;
 
+    // Membuat elemen loading secara dinamis
+    const loadingInfo = document.createElement('div');
+    loadingInfo.id = 'loadingInfo';
+    loadingInfo.classList.add('loading-overlay');
+    loadingInfo.textContent = "Memperbarui Data...";
+
+    // Tambahkan elemen ke dalam body
+    document.body.appendChild(loadingInfo);
+
     // Mengambil data dari API menggunakan fetch
     fetch(url)
         .then(response => response.json())  // Mengonversi response menjadi JSON
@@ -19,9 +28,26 @@ function PerbaruiSantri() {
             } else {
                 console.error("Data 'Santri' tidak ditemukan di dalam response.");
             }
+
+            // Ubah teks menjadi "Selesai Diperbarui"
+            loadingInfo.textContent = "Selesai Diperbarui";
+
+            // Setelah 2 detik, hapus elemen loading dari body
+            setTimeout(() => {
+                document.body.removeChild(loadingInfo);
+            }, 2000);
+            
         })
         .catch(error => {
             console.error("Terjadi kesalahan saat mengambil data dari Google Sheet:", error);
+            
+            // Mengubah teks menjadi "Gagal Memperbarui Data" jika terjadi kesalahan
+            loadingInfo.textContent = "Gagal Memperbarui Data";
+
+            // Setelah 2 detik, hapus elemen loading dari body
+            setTimeout(() => {
+                document.body.removeChild(loadingInfo);
+            }, 2000);
         });
 }
 
