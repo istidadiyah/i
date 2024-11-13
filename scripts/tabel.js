@@ -1,4 +1,4 @@
-
+//---------------------------------------------- Tabel Absensi ------------------------------
 // Fungsi untuk memasukkan data ke tabel dan mengatur filter kelas
 function insertDataToTable(sheet1Data) {
     const tableBody = document.querySelector('#dataTable tbody');
@@ -75,7 +75,7 @@ function insertDataToTable(sheet1Data) {
             await postJSON(encodedData);
         
             // Mengupdate tabel dinamis kedua di halaman setelah data dikirim
-            updateDynamicTableAfterChange(jsonData);
+            updateAbsen(jsonData);
         });
 
         addChangeColorListener(selectAbsensi);
@@ -127,7 +127,6 @@ function collectAbsensiData(dataIDS, nama, kelas, absensi) {
     return jsonData;
 }
 
-// Fungsi untuk mendapatkan nama bulan berdasarkan kode bulan
 function getBulanName(bulan) {
     const bulanNames = {
         "01": "Muharram",

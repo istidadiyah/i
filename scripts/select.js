@@ -1,92 +1,4 @@
 // -------------------------------- Fungsi select di dalam form awal --------------------------------------
-
-// Event Listener untuk select Tanggal dan Bulan
-document.getElementById('filterTanggal').addEventListener('change', updateAbsensiFromDynamicTable);
-document.getElementById('filterBulan').addEventListener('change', updateAbsensiFromDynamicTable);
-document.getElementById('filterJam').addEventListener('change', updateAbsensiFromDynamicTable);
-
-function updateAbsensiFromDynamicTable() {
-    const selectedTanggal = document.getElementById('filterTanggal').value;
-    const selectedBulan = document.getElementById('filterBulan').value;
-    const selectedJam = document.getElementById('filterJam').value;
-
-    updateHeaderInfo()
-
-    // Pastikan tanggal dan bulan dipilih
-    if (!selectedTanggal || !selectedBulan) {
-        // Jika tidak ada yang dipilih, kosongkan semua select di tabel pertama
-        document.querySelectorAll('#dataTable tbody select[data-ids]').forEach(selectElement => {
-            selectElement.value = ''; // Kosongkan nilai select
-        });
-        return; // Tidak ada lagi yang perlu dilakukan
-    }
-
-    const headerTanggal = `${selectedJam}T${selectedTanggal}`; // Nama header yang sesuai dengan tanggal (contoh: "T2")
-    const dynamicBody = document.getElementById('dynamicBody');
-    const rows = dynamicBody.querySelectorAll('tr');
-
-    // Buat objek untuk menyimpan nilai berdasarkan IDS pendek
-    const updatedValues = {};
-
-    // Iterasi melalui setiap baris tabel dinamis untuk menemukan IDS yang cocok
-    rows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-
-        // IDS di tabel kedua ada di kolom kedua (index 1)
-        const fullIDS = cells[1].textContent.trim(); // Ambil IDS dari tabel kedua
-        const idsShort = fullIDS.split('-')[1]; // Ambil IDS pendek (tengah)
-
-        if (fullIDS.endsWith(`-${selectedBulan}`)) {
-            // IDS cocok dengan bulan yang dipilih
-            const tanggalValue = cells[getColumnIndexByName(globalSheet2Data, headerTanggal)]?.textContent || '';
-
-            // Simpan nilai untuk IDS pendek jika ditemukan
-            updatedValues[idsShort] = tanggalValue;
-        }
-    });
-
-    // Iterasi melalui semua elemen select di tabel pertama dan update jika cocok
-    document.querySelectorAll('#dataTable tbody select[data-ids]').forEach(selectElement => {
-        const table1IDS = selectElement.getAttribute('data-ids').trim();
-        
-        if (updatedValues.hasOwnProperty(table1IDS)) {
-            // Jika ada nilai yang sesuai untuk IDS ini
-            selectElement.value = updatedValues[table1IDS] || ''; // Set nilai sesuai data dari tabel kedua
-        } else {
-            // Jika tidak ditemukan, kosongkan nilai
-            selectElement.value = ''; // Kosongkan select
-        }
-
-        // Update warna setiap kali value diubah, baik diisi atau dikosongkan
-        updateSelectColor(selectElement);
-        
-    });
-}
-
-
-// Function to update the header dynamically
-function updateHeaderInfo() {
-    const filterTanggal = document.getElementById('filterTanggal').value;
-    const filterBulan = document.getElementById('filterBulan').value;
-    const filterJam = document.getElementById('filterJam').value;
-
-    const bulanNames = {
-        "01": "Muharram", "02": "Shafar", "03": "Rabi'ul Awwal", "04": "Rabi'ul Akhir",
-        "05": "Jumadil Awwal", "06": "Jumadil Akhir", "07": "Rajab", "08": "Sya'ban",
-        "09": "Ramadhan", "10": "Syawal", "11": "Dzulqa'dah", "12": "Dzulhijjah"
-    };
-
-    const tanggalInfo = document.getElementById('tanggalInfo');
-    const jamText = filterJam === 'M' ? 'Malam' : `Jam Ke ${filterJam}`;
-
-    if (filterTanggal && filterBulan) {
-        // Set dynamic content
-        tanggalInfo.textContent = `Tanggal: ${filterTanggal} ${bulanNames[filterBulan]} (${jamText}) - Tahun Pelajaran 1445-1446`;
-    }
-}
-
-
-
 // Fungsi untuk memfilter tabel berdasarkan kelas
 function filterTableByKelas() {
     const selectedKelas = document.getElementById('filterKelas').value; // Mengambil kelas yang dipilih
@@ -104,74 +16,212 @@ function filterTableByKelas() {
 }
 
 
+// Event Listener untuk select Tanggal, Bulan, dan Jam
+document.getElementById('filterTanggal').addEventListener('change', updateAbsensiFromIndexedDB);
+document.getElementById('filterBulan').addEventListener('change', updateAbsensiFromIndexedDB);
+document.getElementById('filterJam').addEventListener('change', updateAbsensiFromIndexedDB);
+
+function updateAbsensiFromIndexedDB() {
+    const selectedTanggal = document.getElementById('filterTanggal').value;
+    const selectedBulan = document.getElementById('filterBulan').value;
+    const selectedJam = document.getElementById('filterJam').value;
+
+    updateHeaderInfo();
+
+    // Pastikan tanggal dan bulan dipilih
+    if (!selectedTanggal || !selectedBulan) {
+        // Kosongkan semua select di tabel pertama
+        document.querySelectorAll('#dataTable tbody select[data-ids]').forEach(selectElement => {
+            selectElement.value = ''; // Kosongkan nilai select
+            updateSelectColor(selectElement); // Update warna
+        });
+        return; // Tidak ada lagi yang perlu dilakukan
+    }
+
+    // Buka koneksi IndexedDB tanpa versi untuk menggunakan versi terbaru yang tersedia
+    const request = indexedDB.open('Istidadiyah');
+
+    // Event untuk upgrade jika versi database berbeda
+    request.onupgradeneeded = function (event) {
+        const db = event.target.result;
+
+        if (!db.objectStoreNames.contains('Absen')) {
+            db.createObjectStore('Absen', { keyPath: 'IDS' });
+        } else {
+            console.log('Database upgrade: Object store "Absen" sudah ada. Bisa ditambahkan perubahan jika diperlukan.');
+        }
+    };
+
+    // Jika pembukaan database berhasil
+    request.onsuccess = function (event) {
+        const db = event.target.result;
+
+        try {
+            const transaction = db.transaction(['Absen'], 'readonly');
+            const store = transaction.objectStore('Absen');
+
+            const updatedValues = {};
+
+            // Gunakan cursor untuk iterasi melalui data di dalam store
+            const cursorRequest = store.openCursor();
+
+            cursorRequest.onsuccess = function (event) {
+                const cursor = event.target.result;
+                if (cursor) {
+                    const record = cursor.value;
+
+                    // Menggunakan 'IDS' untuk mendapatkan ID pendek
+                    const IDS = record.IDS;
+
+                    if (IDS && IDS.includes('-')) {
+                        const idsShort = IDS.split('-')[1]; // Ambil IDS pendek (bagian tengah dari IDS)
+
+                        // Cek apakah bulan dan tanggal sesuai dengan pilihan user
+                        const bulanNama = getBulanName(selectedBulan);
+                        if (record.Bulan === bulanNama) {
+                            const headerTanggal = `${selectedJam}T${selectedTanggal}`; // Nama header yang sesuai dengan tanggal
+                            const tanggalValue = record[headerTanggal] || '';
+
+                            // Simpan nilai untuk IDS pendek jika ditemukan
+                            updatedValues[idsShort] = tanggalValue;
+                        } else {
+                            //console.warn(`Data tidak cocok untuk bulan: ${bulanNama}, IDS: ${IDS}`);
+                        }
+                    } else {
+                        console.warn('Format IDS tidak valid atau tidak memiliki "-":', IDS);
+                    }
+
+                    cursor.continue();
+                } else {
+                    // Jika tidak ada lagi data dalam cursor, update select di tabel pertama
+                    document.querySelectorAll('#dataTable tbody select[data-ids]').forEach(selectElement => {
+                        const table1IDS = selectElement.getAttribute('data-ids').trim();
+
+                        if (updatedValues.hasOwnProperty(table1IDS)) {
+                            // Jika ada nilai yang sesuai untuk IDS ini
+                            selectElement.value = updatedValues[table1IDS] || ''; // Set nilai sesuai data dari IndexedDB
+                        } else {
+                            // Jika tidak ditemukan, kosongkan nilai
+                            selectElement.value = ''; // Kosongkan select
+                        }
+
+                        // Update warna setiap kali value diubah, baik diisi atau dikosongkan
+                        updateSelectColor(selectElement);
+                    });
+                }
+            };
+
+            cursorRequest.onerror = function (event) {
+                console.error('Error while reading cursor:', event.target.error);
+                alert('Error occurred while reading data from IndexedDB. Please try again later.');
+            };
+
+            transaction.oncomplete = function () {
+                console.log('Transaction completed: All selects updated.');
+            };
+
+            transaction.onerror = function (event) {
+                console.error('Transaction error:', event.target.error);
+                alert('Transaction failed. Data retrieval process could not be completed.');
+            };
+        } catch (error) {
+            console.error('Unexpected error:', error);
+            alert('An unexpected error occurred while accessing the database. Please refresh the page and try again.');
+        }
+    };
+
+    // Jika pembukaan database gagal
+    request.onerror = function (event) {
+        console.error('Database open error:', event.target.error);
+        alert('Could not open IndexedDB database. Please check your browser support or contact support.');
+    };
+}
+
+// Function to update the header dynamically
+function updateHeaderInfo() {
+    const filterTanggal = document.getElementById('filterTanggal').value;
+    const filterBulan = document.getElementById('filterBulan').value;
+    const filterJam = document.getElementById('filterJam').value;
+
+    const bulanNames = {
+        "01": "Muharram", "02": "Shafar", "03": "Rabi'ul Awwal", "04": "Rabi'ul Akhir",
+        "05": "Jumadil Awwal", "06": "Jumadil Akhir", "07": "Rajab", "08": "Sya'ban",
+        "09": "Ramadhan", "10": "Syawal", "11": "Dzulqa'dah", "12": "Dzulhijjah"
+    };
+
+    const tanggalInfo = document.getElementById('tanggalInfo');
+    const jamText = filterJam === 'M' ? 'Malam' : `Jam Ke ${filterJam}`;
+
+    if (filterTanggal && filterBulan) {
+        tanggalInfo.textContent = `Tanggal: ${filterTanggal} ${bulanNames[filterBulan]} (${jamText}) - Tahun Pelajaran 1445-1446`;
+    }
+}
+
+
 
 
 
 // --------------------------------- Fungsi select di dalam tabel -----------------------------
+// Fungsi untuk memperbarui atau menambahkan data di IndexedDB object store "Absen"
+function updateAbsen(updatedData) {
+    // Membuka database IndexedDB "Istidadiyah"
+    let request = indexedDB.open("Istidadiyah");
 
-function updateDynamicTableAfterChange(updatedData) {
-    const dynamicBody = document.getElementById('dynamicBody');
+    request.onsuccess = function (event) {
+        let db = event.target.result;
 
-    // IDS dari data yang baru diperbarui
-    const updatedIDS = updatedData.IDS.trim(); // Trim IDS untuk menghindari masalah whitespace
+        // Cek apakah object store "Absen" ada
+        if (db.objectStoreNames.contains("Absen")) {
+            let transaction = db.transaction("Absen", "readwrite");
+            let objectStore = transaction.objectStore("Absen");
 
-    // Ambil semua baris di tabel dinamis
-    const rows = dynamicBody.querySelectorAll('tr');
+            // IDS dari data yang baru diperbarui
+            const updatedIDS = updatedData.IDS.trim(); // Trim IDS untuk menghindari masalah whitespace
 
-    // Cari baris dengan IDS yang sesuai
-    let rowToUpdate = null;
+            // Mengambil data berdasarkan IDS
+            let getRequest = objectStore.get(updatedIDS);
 
-    for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        const cells = row.querySelectorAll('td');
-
-        if (cells.length > 1) { // Pastikan baris memiliki setidaknya dua sel
-            const IDSCell = cells[1].textContent.trim();  // Kolom kedua dianggap sebagai kolom IDS
-
-            if (IDSCell === updatedIDS) {
-                rowToUpdate = row;
-                break;  // Berhenti setelah menemukan baris yang sesuai
-            }
-        }
-    }
-
-    if (rowToUpdate) {
-        console.log('IDS ditemukan, memperbarui baris:', updatedIDS);
-
-        // IDS ditemukan, perbarui data baris tersebut
-        const cells = rowToUpdate.querySelectorAll('td');
-
-        for (let key in updatedData) {
-            if (key !== 'IDS' && key !== 'TanggalUpdate') {
-                const columnIndex = getColumnIndexByName(globalSheet2Data, key);
-                if (columnIndex !== -1 && columnIndex < cells.length) {
-                    cells[columnIndex].textContent = updatedData[key];
+            getRequest.onsuccess = function () {
+                if (getRequest.result) {
+                    // Data ditemukan, lakukan pembaruan
+                    let dataToUpdate = getRequest.result;
+                    Object.assign(dataToUpdate, updatedData); // Menggabungkan data lama dengan data baru
+                    objectStore.put(dataToUpdate);
+                    console.log('Data Absensi diperbarui di IndexedDB:', updatedIDS);
+                } else {
+                    // Data tidak ditemukan, tambahkan data baru
+                    objectStore.add(updatedData);
+                    console.log('Data Absensi baru ditambahkan ke IndexedDB:', updatedIDS);
                 }
-            }
+            };
+
+            getRequest.onerror = function () {
+                console.error("Terjadi kesalahan saat mengambil data Absensi dari IndexedDB.");
+            };
+
+            transaction.oncomplete = function () {
+                console.log("Transaksi untuk update/insert data Absensi selesai.");
+            };
+
+            transaction.onerror = function () {
+                console.error("Terjadi kesalahan saat transaksi untuk update/insert data Absensi.");
+            };
+        } else {
+            console.warn("Object store 'Absen' tidak ditemukan di IndexedDB. Memperbarui seluruh database...");
+
+            // Jika object store tidak ada, perbarui seluruh database dengan memanggil PerbaruiIndexedDB
+            PerbaruiIndexedDB();
+
+            // Ulangi proses update setelah IndexedDB diperbarui
+            transaction.oncomplete = function () {
+                updateAbsen(updatedData);
+            };
         }
-    } else {
-        console.log('IDS tidak ditemukan, menambahkan baris baru:', updatedIDS);
+    };
 
-        // IDS tidak ditemukan, tambahkan baris baru
-        const newRow = document.createElement('tr');
-        const columns = Object.keys(globalSheet2Data[0]);
-
-        // Membuat sel data berdasarkan kolom yang ada
-        columns.forEach(column => {
-            const newCell = document.createElement('td');
-            newCell.textContent = updatedData[column] || '';  // Menggunakan default kosong jika data tidak ada
-            newRow.appendChild(newCell);
-        });
-
-        // Menambahkan row baru ke dalam body tabel
-        dynamicBody.appendChild(newRow);
-    }
-}
-
-// Fungsi untuk mendapatkan indeks kolom berdasarkan nama kolom
-function getColumnIndexByName(sheet2Data, columnName) {
-    const columns = Object.keys(sheet2Data[0]);
-    return columns.indexOf(columnName);
+    request.onerror = function (event) {
+        console.error("Terjadi kesalahan saat membuka database IndexedDB:", event.target.error);
+    };
 }
 
 
@@ -226,6 +276,8 @@ function addChangeColorListener(selectAbsensi) {
     // Set warna pada saat pertama kali elemen dibuat, agar sesuai dengan nilai default
     updateSelectColor(selectAbsensi);
 }
+
+
 
 
 
