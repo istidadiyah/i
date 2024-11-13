@@ -4,21 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Absensi Isti'dadiyah</title>
-
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
     <!-- Bootstrap Select CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.min.css">
 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../styles/style.css">
     <link rel="stylesheet" href="../styles/header.css">
 
     <!-- Default Theme CSS -->
     <link id="themeStylesheet" rel="stylesheet" href="styles/tema/light.css">
+    
 </head>
 <body>
-    <!-- Konten HTML Anda -->
     <div class="svg-container">
         <!-- I crated SVG with: https://codepen.io/anthonydugois/pen/mewdyZ -->
         <svg viewbox="0 0 800 400" class="svg">
@@ -32,7 +32,6 @@
         <div class="sub-title" id="tanggalInfo">
             Tanggal: 1 Muharram (Malam) - Tahun Pelajaran 1445-1446
         </div>
-        <p onclick="PerbaruiIndexedDB()">Perbarui Data</p>
       </header>
 
 
@@ -41,48 +40,18 @@
     <div id="antrianCounter" style="display: none;">
         0
     </div>
-    <!-- Elemen untuk menampilkan angka antrian -->
-    <div id="antrianCounter" style="display:none;">0</div>
-
-    <!-- Kontainer untuk menampilkan daftar antrian -->
-     
-    <div id="queueContainer" style="display:none;" class="card shadow-sm mt-4">
-        <h3>Daftar Antrian</h3>
-        <ul id="queueList">
-            <!-- Daftar antrian akan muncul di sini -->
-        </ul>
-        <button id="closeQueueContainer">Tutup</button>
-    </div>
-
-    <!-- Tambahkan CSS untuk animasi -->
-    <style>
-        .queue-anim {
-            animation: fadeIn 1s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-    </style>
-     <!-- Loading Spinner 
+    
+     <!-- Loading Spinner -->
      <div id="loadingSpinner" class="loading-spinner">
         <div class="spinner-inner">
             <img src="../logo.png" alt="Logo" class="logo">
         </div>
-    </div>-->
+    </div>
     
     <div class="container mt-4">
         <!-- Card untuk form -->
         <!-- Filter Form -->
-         
         <div id="formfilter" class="card shadow-sm p-4 form-filter">
-
-
             <div class="col-12">
                 <label for="filterGuru">Guru:</label>
                 <select id="filterGuru" class="form-control">
@@ -92,7 +61,6 @@
                     <option value="Taufiqurrahman S">Taufiqurrahman S</option>
                     <option value="M. Affan">M. Affan</option>
                     <option value="Miftahul Anam">Miftahul Anam</option>
-                    <option value="Muhammad Baisuki">Muhammad Baisuki</option>
                     <option value="M. Fikrin Ni'am">M. Fikrin Ni'am</option>
                     <option value="M. Sofyan">M. Sofyan</option>
                     <option value="Mufti Ali">Mufti Ali</option>
@@ -172,8 +140,7 @@
         </button>
 
     
-
-
+        <!-- Data Table -->
         <div class="card shadow-sm mt-4">
             <div class="card-body">
                 <table id="dataTable" class="table table-striped table-bordered">
@@ -206,36 +173,26 @@
     </footer>
 
 
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- Bootstrap JS -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
     <!-- Bootstrap Select JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
 
-    <!-- DataTables JS -->
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-
-    <!-- Script Kustom Anda -->
     <script src="../scripts/cache.js"></script>
     <script src="../scripts/header.js"></script> 
     <script src="../scripts/online.js"></script>
-    <script src="../scripts/indexedDB.js"></script>
     <script src="../scripts/select.js"></script>
     <script src="../scripts/setting.js"></script>
     <script src="../scripts/tabel.js"></script>
 
     <script>
         $(document).ready(function(){
-            // Pastikan selectpicker diinisialisasi setelah DOM siap
-            $('.selectpicker').selectpicker();
-
-            cekObjectStore('Santri');
-            // Fungsi kustom lainnya
-            OpenSantri(insertDataToTable);
+            fetchDataFromAppScript();
         });
     </script>
+    
+
 </body>
 </html>

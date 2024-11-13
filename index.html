@@ -6,7 +6,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="styles/header.css">
-    <link rel="stylesheet" href="styles/style.css">
 
     <!-- Default Theme CSS -->
     <link id="themeStylesheet" rel="stylesheet" href="styles/tema/light.css">
@@ -39,35 +38,7 @@
         <div class="sub-title" id="tanggalInfo">
             Aplikasi Khusus Guru Isti'dadiyah
         </div>
-        <div id="loadingInfo" style="display: None; justify-content: center; align-items: center;">
-            <span>Memperbarui data </span>
-            <div class="spinner" id="loadingSpinner"></div>
-        </div>
     </header>
-    
-    <style>
-        #loadingInfo {
-            display: flex;            /* Menggunakan flexbox untuk penataan */
-            justify-content: center;  /* Mengatur elemen di tengah secara horizontal */
-            align-items: center;      /* Mengatur elemen di tengah secara vertikal */
-            margin-top: 10px;         /* Memberikan jarak ke atas agar terlihat lebih rapi */
-        }
-    
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 2s linear infinite;
-            margin-left: 47%;        /* Memberikan jarak antara teks "Memperbarui data" dengan spinner */
-        }
-    
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
 
     <div class="container text-center mt-5">
         <div class="row">
@@ -96,7 +67,7 @@
                 </a>
             </div>
             <div class="col-4 col-md-3 col-lg-2 col-xl-1 mb-4 grid-item">
-                <a href="javascript:void(0)" onclick="PerbaruiSantri()">
+                <a href="halaman/biodata.html">
                     <i class="fas fa-id-card fa-2x"></i>
                     <div>Biodata</div>
                 </a>
@@ -125,29 +96,12 @@
                     <div>Setting</div>
                 </a>
             </div>
-
-            <div id="updateButton" class="col-4 col-md-3 col-lg-2 col-xl-1 mb-4 grid-item">
-                <a href="javascript:void(0)" onclick="PerbaruiIndexedDB()">
-                    <i class="fas fa-sync-alt fa-2x"></i>
-                    <div>Perbarui Data</div>
-                </a>
-            </div>
-            
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Script JS -->
     <script src="scripts/setting.js" defer></script>
     <script src="scripts/header.js"></script>
-    <script src="scripts/online.js"></script>
-    <script src="scripts/indexedDB.js"></script>
-    
-    <script>
-        $(document).ready(function(){
-            cekObjectStore('Santri');
-        });
-    </script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
